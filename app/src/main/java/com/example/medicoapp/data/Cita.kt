@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "cita")
 data class Cita(
-    @PrimaryKey val id: Int,
-    val medicoId: Int, // Referencia a la tabla `Medico`
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val medicoId: Int,
     val fecha: String,
     val descripcion: String
 )

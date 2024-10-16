@@ -6,16 +6,20 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.medicoapp.data.AppDatabase
 import com.example.medicoapp.data.Cita
 import com.example.medicoapp.data.Medico
-import com.example.medicoapp.repository.MedicoRepository
 import com.example.medicoapp.repository.CitaRepository
+import com.example.medicoapp.repository.MedicoRepository
+import com.example.medicoapp.ui.CitaListScreen
 import com.example.medicoapp.ui.MedicoListScreen
-import com.example.medicoapp.viewmodel.MedicoViewModel
-import com.example.medicoapp.viewmodel.CitaViewModel
 import com.example.medicoapp.ui.theme.MedicoAppTheme
+import com.example.medicoapp.viewmodel.CitaViewModel
 import com.example.medicoapp.viewmodel.CitaViewModelFactory
+import com.example.medicoapp.viewmodel.MedicoViewModel
 import com.example.medicoapp.viewmodel.MedicoViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,8 +43,24 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MedicoAppTheme {
+                val navController = rememberNavController()
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    MedicoListScreen(medicoViewModel)
+                    NavHost(navController, startDestination = "medico_list") {
+                        composable("medico_list") {
+                            MedicoListScreen(
+                                viewModel = medicoViewModel,
+                                navController = navController,
+                                onMedicoClick = { medicoId ->
+                                    navController.navigate("cita_list/$medicoId")
+                                }
+                            )
+                        }
+                        composable("cita_list/{medicoId}") { backStackEntry ->
+                            val medicoId = backStackEntry.arguments?.getString("medicoId")?.toIntOrNull() ?: 0
+                            // Asegúrate de pasar navController aquí
+                            CitaListScreen(medicoId = medicoId, viewModel = citaViewModel)
+                        }
+                    }
                 }
             }
         }
@@ -48,18 +68,15 @@ class MainActivity : ComponentActivity() {
 
     private fun llenarDatosIniciales(medicoViewModel: MedicoViewModel, citaViewModel: CitaViewModel) {
         coroutineScope.launch {
-
             val medico1 = Medico(nombre = "Dr. Juan Pérez", especialidad = "Cardiología", uriImagen = "")
             val medico2 = Medico(nombre = "Dra. Ana García", especialidad = "Pediatría", uriImagen = "")
-
 
             medicoViewModel.insertarMedico(medico1)
             medicoViewModel.insertarMedico(medico2)
 
-
             citaViewModel.insertarCita(Cita(medicoId = 1, fecha = "2024-10-15", descripcion = "Consulta de rutina"))
-            citaViewModel.insertarCita(Cita(medicoId = 1, fecha = "2024-10-20", descripcion = "Chequeo de presión"))
-            citaViewModel.insertarCita(Cita(medicoId = 2, fecha = "2024-10-18", descripcion = "Revisión anual"))
+            citaViewModel.insertarCita(Cita(medicoId = 1, fecha = "2024-10-20", descripcion = "Control de seguimiento"))
+            citaViewModel.insertarCita(Cita(medicoId = 2, fecha = "2024-11-01", descripcion = "Vacunación"))
         }
     }
 }

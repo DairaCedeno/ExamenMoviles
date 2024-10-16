@@ -1,10 +1,9 @@
 package com.example.medicoapp.data
 
-
+import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import android.content.Context
 
 @Database(entities = [Medico::class, Cita::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
@@ -20,7 +19,7 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "medico_database"
+                    "app_database"
                 ).build()
                 INSTANCE = instance
                 instance
@@ -28,3 +27,4 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 }
+

@@ -6,7 +6,6 @@ import com.example.medicoapp.data.Cita
 import com.example.medicoapp.repository.CitaRepository
 import kotlinx.coroutines.launch
 
-
 class CitaViewModel(private val repository: CitaRepository) : ViewModel() {
     fun obtenerCitasPorMedico(medicoId: Int) = repository.obtenerCitasPorMedico(medicoId)
 
